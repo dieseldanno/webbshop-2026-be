@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  //TODO: Add more fields as needed
+  //TODO: Add more fields as needed related to events
 });
 
 const Product = mongoose.model("Product", productSchema);
