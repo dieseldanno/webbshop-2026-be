@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import productsRouter from "./routes/products.js";
 import authRouter from "./routes/auth.js";
+import eventRouter from "./routes/events.js";
 import cors from "cors";
 
 const app = express();
@@ -30,7 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/", (req, res) => {
-  res.json({ message: "Webbshop API", stack: "MEN (MongoDB, Express, Node.js)" });
+  res.json({
+    message: "Webbshop API",
+    stack: "MEN (MongoDB, Express, Node.js)",
+  });
 });
 
 app.get("/health", (req, res) => {
@@ -39,6 +43,7 @@ app.get("/health", (req, res) => {
 
 app.use("/products", productsRouter);
 app.use("/auth", authRouter);
+app.use("/events", eventRouter);
 //TODO: Add more routes as needed
 
 export default app;
