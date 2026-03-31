@@ -5,7 +5,7 @@ import { getEvents } from "../db/events.js";
 eventRouter.get("/", async (req, res) => {
   try {
     const events = await getEvents();
-    res.json(events);
+    res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ message: "Error fetching events" });
