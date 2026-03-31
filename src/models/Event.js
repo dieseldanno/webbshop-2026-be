@@ -29,6 +29,10 @@ const eventSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    currentBookings: {
+      type: Number,
+      default: 0,
+    },
     imageUrl: {
       type: String,
     },
@@ -38,8 +42,18 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    // Detta gör att vi kan skicaka med "virtials" som spotLeft till Frontend
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
 );
+
+// Här visar hur många plats kvar.
+eventSchema.virtual("spotLeft").get(function () {
+  return this.maxCapacity - this.currentBookings;
+});
 
 const Event = mongoose.model("Event", eventSchema);
 
