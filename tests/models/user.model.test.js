@@ -11,7 +11,7 @@ describe("User model", () => {
     const user = new User({
       name: "John Doe",
       email: "john.doe@example.com",
-      password: "password",
+      passwordHash: "password",
     });
     await user.save();
     expect(user).toBeDefined();
@@ -22,9 +22,9 @@ describe("User model", () => {
     const user = new User({
       name: "John Doe",
       email: "john.doe@example.com",
-      password: "password",
+      passwordHash: "password",
     });
     await user.save();
-    expect(user.password).not.toBe("password");
+    expect(user.passwordHash).not.toBe("password");
   });
 });
