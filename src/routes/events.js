@@ -1,6 +1,6 @@
 import { Router } from "express";
 const eventRouter = Router();
-import { getEvents } from "../db/events.js";
+import { getEvents, createEvent } from "../db/events.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
@@ -35,7 +35,7 @@ eventRouter.post("/", async (req, res) => {
     ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-    const event = new Event({
+    const newEvent = await createEvent({
       title,
       description,
       date,
@@ -45,8 +45,7 @@ eventRouter.post("/", async (req, res) => {
       category,
       imageUrl,
     });
-    await event.save();
-    res.status(201).json(event);
+    res.status(201).json(newEvent);
   } catch (error) {
     console.error("Error creating event:", error);
     res.status(400).json({ message: "Error creating event" });
