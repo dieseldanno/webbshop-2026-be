@@ -17,7 +17,7 @@ router.post(
         return res.status(409).json({ error: "Email already registered" });
       }
 
-      const user = await createUser({ name, email, password });
+      const user = await createUser({ name, email, passwordHash: password });
       res.status(201).json({
         id: user._id,
         name: user.name,
