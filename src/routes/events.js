@@ -1,13 +1,14 @@
 import { Router } from "express";
 const eventRouter = Router();
-import Event from "../models/Event.js";
+import { getEvents } from "../db/events.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await getEvents();
     res.json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
+    res.status(500).json({ message: "Error fetching events" });
   }
 });
 
