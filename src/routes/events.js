@@ -1,6 +1,6 @@
 import { Router } from "express";
 const eventRouter = Router();
-import { getEvents, createEvent } from "../db/events.js";
+import { getEvents, getEventById, createEvent } from "../db/events.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
@@ -11,6 +11,24 @@ eventRouter.get("/", async (req, res) => {
     res.status(500).json({ message: "Error fetching events" });
   }
 });
+
+eventRouter.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const event = await getEventById(id)
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" })
+    }
+    res.status(200).json(event);
+  } catch (error) {
+
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: "Ogiltigt ID-format" });
+    }
+    console.error("Error fetching event:", error);
+    res.status(500).json({ message: "Error fetching event" });
+  }
+})
 
 eventRouter.post("/", async (req, res) => {
   try {
