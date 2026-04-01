@@ -26,10 +26,17 @@ router.post(
       }
 
       const user = await createUser({ name, email, passwordHash: password });
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          email: user.email,
+          role: user.role || "user",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
       res.status(201).json({
-        id: user._id,
-        name: user.name,
-        email: user.email,
+        token,
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -59,10 +66,15 @@ router.post(
       }
 
       const token = jwt.sign(
-        { userId: user._id },
+        {
+          userId: user._id,
+          email: user.email,
+          role: user.role || "user",
+        },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
+
 
       res.status(200).json({ token });
     } catch (error) {
