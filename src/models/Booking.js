@@ -10,12 +10,13 @@ const bookingSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      lowercase: true,
       validate: {
         validator: function (v) {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);

@@ -1,11 +1,10 @@
-import Event from './models/event.js';
+import Event from "../models/Event.js";
 
 export async function getEvents() {
-    return await Event.find().sort({ date: 1 }); // Sort by date ascending
+  return await Event.find().sort({ date: 1 }); // Sort by date ascending
 }
 
 export async function createEvent(eventData) {
-    const event = new Event(eventData);
-    return await event.save();
+  const event = new Event(eventData);
+  return await event.save();
 }
-
