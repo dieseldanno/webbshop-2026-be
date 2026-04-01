@@ -1,4 +1,5 @@
 import Product from "../models/Product.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 export async function getProducts() {
   return await Product.find();
