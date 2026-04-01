@@ -52,7 +52,7 @@ bookingRouter.post("/", async (req, res) => {
     const savedBooking = await newBooking.save();
     const populatedBooking = await savedBooking.populate(
       "event",
-      //   "title date location",
+      "title date location",
     );
 
     return res.status(201).json(populatedBooking);
