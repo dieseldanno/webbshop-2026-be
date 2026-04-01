@@ -6,6 +6,7 @@ export async function getEvents() {
 
   const eventsWithSpots = await Promise.all(
     events.map(async (event) => {
+      // Räkna bokningar live för varje event
       const bookingCount = await Booking.countDocuments({ event: event._id });
       return {
         ...event.toObject(),
@@ -14,6 +15,17 @@ export async function getEvents() {
     }),
   );
   return eventsWithSpots;
+}
+
+export async function getEventById(eventId) {
+  const event = await Event.findById(eventId);
+  if (!event) return null;
+  // Räkna bokningar live för detta specifika event
+  const bookingCount = await Booking.countDocuments({ event: event._id });
+  return {
+    ...event.toObject(),
+    spotsLeft: event.maxCapacity - bookingCount,
+  }
 }
 
 export async function createEvent(eventData) {
