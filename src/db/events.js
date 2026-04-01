@@ -1,4 +1,5 @@
 import Event from "../models/Event.js";
+import Booking from "../models/Booking.js";
 
 export async function getEvents() {
   return await Event.find().sort({ date: 1 }); // Sort by date ascending
