@@ -1,6 +1,7 @@
 import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
 
+
 export async function getEvents() {
   const events = await Event.find().sort({ date: 1 });
 
@@ -14,6 +15,17 @@ export async function getEvents() {
     }),
   );
   return eventsWithSpots;
+}
+
+export async function getEventById(eventId) {
+  const event = await Event.findById(eventId);
+  if (!event) return null;
+  // Räkna bokningar live för detta specifika event
+  const bookingCount = await Booking.countDocuments({ event: event._id });
+  return {
+    ...event.toObject(),
+    spotsLeft: event.maxCapacity - bookingCount,
+  };
 }
 
 export async function createEvent(eventData) {

@@ -1,9 +1,9 @@
 import { Router } from "express";
-const eventRouter = Router();
+const eventsRouter = Router();
 import { getEvents, createEvent } from "../db/events.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
-eventRouter.get("/", authMiddleware, async (req, res) => {
+eventsRouter.get("/", authMiddleware, async (req, res) => {
   try {
     const events = await getEvents();
     res.status(200).json(events);
@@ -13,7 +13,7 @@ eventRouter.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-eventRouter.post("/", async (req, res) => {
+eventsRouter.post("/", async (req, res) => {
   try {
     const {
       title,
@@ -53,4 +53,4 @@ eventRouter.post("/", async (req, res) => {
   }
 });
 
-export default eventRouter;
+export default eventsRouter;
