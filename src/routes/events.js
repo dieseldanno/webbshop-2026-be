@@ -3,7 +3,7 @@ const eventsRouter = Router();
 import { getEvents, createEvent } from "../db/events.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
-eventsRouter.get("/", authMiddleware, async (req, res) => {
+eventsRouter.get("/", async (req, res) => {
   try {
     const events = await getEvents();
     res.status(200).json(events);
@@ -13,7 +13,7 @@ eventsRouter.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-eventsRouter.post("/", async (req, res) => {
+eventsRouter.post("/", authMiddleware, async (req, res) => {
   try {
     const {
       title,
