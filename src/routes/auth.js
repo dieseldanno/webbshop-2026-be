@@ -5,6 +5,7 @@ import {
   validateLogin,
   validateAuthResult,
 } from "../middleware/authValidation.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import {
   createUser,
   findUserByEmail,
