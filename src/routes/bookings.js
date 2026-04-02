@@ -16,7 +16,7 @@ bookingRouter.get("/", async (req, res) => {
   }
 });
 
-bookingRouter.post("/", authMiddleware, async (req, res) => {
+bookingRouter.post("/", async (req, res) => {
   const { eventId, name, email } = req.body;
 
   if (!eventId || !name || !email) {
