@@ -1,6 +1,8 @@
 import { Router } from "express";
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import mongoose from "mongoose";
 
 const bookingRouter = Router();
 
