@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import mongoose from "mongoose";
 
 const bookingRouter = Router();
@@ -15,7 +16,7 @@ bookingRouter.get("/", async (req, res) => {
   }
 });
 
-bookingRouter.post("/", async (req, res) => {
+bookingRouter.post("/", authMiddleware, async (req, res) => {
   const { eventId, name, email } = req.body;
 
   if (!eventId || !name || !email) {

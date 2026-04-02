@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { validateProduct, validateProductResult } from "../middleware/productValidation.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import { getProducts, createProduct } from "../db/products.js";
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get("/", async (req, res) => {
 
 //TODO GET /products/:slug
 
-router.post("/", validateProduct, validateProductResult, async (req, res) => {
+router.post("/", authMiddleware, validateProduct, validateProductResult, async (req, res) => {
   const product = await createProduct(req.body);
   res.status(201).json(product);
 });

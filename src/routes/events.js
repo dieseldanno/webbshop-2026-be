@@ -1,8 +1,9 @@
 import { Router } from "express";
 const eventRouter = Router();
 import { getEvents, createEvent } from "../db/events.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
-eventRouter.get("/", async (req, res) => {
+eventRouter.get("/", authMiddleware, async (req, res) => {
   try {
     const events = await getEvents();
     res.status(200).json(events);
