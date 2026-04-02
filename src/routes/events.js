@@ -1,9 +1,9 @@
 import { Router } from "express";
-const eventRouter = Router();
+const eventsRouter = Router();
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { getEvents, getEventById, createEvent } from "../db/events.js";
 
-eventRouter.get("/", authMiddleware, async (req, res) => {
+eventsRouter.get("/", authMiddleware, async (req, res) => {
   try {
     const events = await getEvents();
     res.status(200).json(events);
@@ -13,25 +13,7 @@ eventRouter.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-eventRouter.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-    const event = await getEventById(id)
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" })
-    }
-    res.status(200).json(event);
-  } catch (error) {
-
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: "Ogiltigt ID-format" });
-    }
-    console.error("Error fetching event:", error);
-    res.status(500).json({ message: "Error fetching event" });
-  }
-})
-
-eventRouter.post("/", async (req, res) => {
+eventsRouter.post("/", async (req, res) => {
   try {
     const {
       title,
@@ -71,4 +53,4 @@ eventRouter.post("/", async (req, res) => {
   }
 });
 
-export default eventRouter;
+export default eventsRouter;
