@@ -7,14 +7,14 @@ import mongoose from "mongoose";
 const bookingRouter = Router();
 
 // behövs ej
-// bookingRouter.get("/", async (req, res) => {
-//   try {
-//     const bookings = await Booking.find().populate("event", "title");
-//     res.json(bookings);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+bookingRouter.get("/", async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate("event", "title");
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 bookingRouter.post("/", authMiddleware, async (req, res) => {
   const { eventId, name, email } = req.body;
@@ -26,7 +26,7 @@ bookingRouter.post("/", authMiddleware, async (req, res) => {
   }
 
   try {
-    // fix for invalid eventis formats
+    // fix for invalid events formats
     if (!mongoose.isValidObjectId(eventId)) {
       return res.status(400).json({ message: "Invalid eventId format" });
     }
@@ -51,8 +51,12 @@ bookingRouter.post("/", authMiddleware, async (req, res) => {
     });
 
     const savedBooking = await newBooking.save();
+    const populatedBooking = await savedBooking.populate(
+      "event",
+      "title date location",
+    );
 
-    return res.status(201).json(savedBooking);
+    return res.status(201).json(populatedBooking);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
