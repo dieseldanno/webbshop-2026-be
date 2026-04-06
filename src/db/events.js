@@ -1,7 +1,6 @@
 import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
 
-
 export async function getEvents() {
   const events = await Event.find().sort({ date: 1 });
 
@@ -31,4 +30,16 @@ export async function getEventById(eventId) {
 export async function createEvent(eventData) {
   const event = new Event(eventData);
   return await event.save();
+}
+
+export async function updateEvent(eventId, eventData) {
+  const event = await Event.findByIdAndUpdate(eventId, eventData, 
+    { new: true, runValidators: true }
+);
+  if (!event) return null;
+  const bookingCount = await Booking.countDocuments({ event: event._id });
+  return {
+    ...event.toObject(),
+    spotLeft: event.maxCapacity - bookingCount,
+  };
 }
