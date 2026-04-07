@@ -62,4 +62,28 @@ bookingRouter.post("/", async (req, res) => {
   }
 });
 
+bookingRouter.delete("/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // fix for invalid eventis formats
+    // if (!mongoose.isValidObjectId(eventId)) {
+    //   return res.status(400).json({ message: "Invalid eventId format" });
+    // }
+
+    const deleted = await Booking.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
+    }
+    return res.status(200).json({
+      message: "Booking cancelled",
+      booking: deleted,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 export default bookingRouter;
