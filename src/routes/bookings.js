@@ -1,8 +1,9 @@
 import { Router } from "express";
 import Booking from "../models/Booking.js";
-import Event from "../models/Event.js";
+// import Event from "../models/Event.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import mongoose from "mongoose";
+import { createBooking, deleteBooking } from "../db/bookings.js";
 
 const bookingRouter = Router();
 
@@ -25,33 +26,23 @@ bookingRouter.post("/", async (req, res) => {
     });
   }
 
+  // fix for invalid events formats
+  if (!mongoose.isValidObjectId(eventId)) {
+    return res.status(400).json({ message: "Invalid eventId format" });
+  }
+
   try {
-    // fix for invalid events formats
-    if (!mongoose.isValidObjectId(eventId)) {
-      return res.status(400).json({ message: "Invalid eventId format" });
+    const result = await createBooking({ eventId, name, email });
+
+    if (result.error === "not_found") {
+      return res.status(404).json({ message: "Event not found" });
     }
 
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({
-        message: "Event not found",
-      });
+    if (result.error === "full") {
+      return res.status(409).json({ message: "Event is fully booked" });
     }
-    const bookingCount = await Booking.countDocuments({ event: eventId });
 
-    if (bookingCount >= event.maxCapacity) {
-      return res.status(409).json({
-        message: "Event is fully booked",
-      });
-    }
-    const newBooking = new Booking({
-      event: eventId,
-      name,
-      email,
-    });
-
-    const savedBooking = await newBooking.save();
-    const populatedBooking = await savedBooking.populate(
+    const populatedBooking = await result.booking.populate(
       "event",
       "title date location",
     );
@@ -66,12 +57,7 @@ bookingRouter.delete("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
-    // fix for invalid eventis formats
-    // if (!mongoose.isValidObjectId(eventId)) {
-    //   return res.status(400).json({ message: "Invalid eventId format" });
-    // }
-
-    const deleted = await Booking.findByIdAndDelete(id);
+    const deleted = await deleteBooking(id);
     if (!deleted) {
       return res.status(404).json({
         message: "Booking not found",
