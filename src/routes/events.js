@@ -1,6 +1,6 @@
 import { Router } from "express";
 const eventsRouter = Router();
-import { getEvents, createEvent } from "../db/events.js";
+import { getEvents, createEvent, updateEvent } from "../db/events.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 eventsRouter.get("/", async (req, res) => {
@@ -50,6 +50,21 @@ eventsRouter.post("/", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error creating event:", error);
     res.status(400).json({ message: "Error creating event" });
+  }
+});
+
+eventsRouter.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateEventById = await updateEvent(id, req.body);
+
+    if (!updateEventById) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    res.status(200).json(updateEventById);
+  } catch (error) {
+    console.error("Error updating event:", error);
+    res.status(400).json({ message: "Error updating event" });
   }
 });
 
