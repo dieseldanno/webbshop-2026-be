@@ -102,7 +102,7 @@ eventRouter.delete("/:id", authMiddleware, async (req, res) => {
     res
       .status(200)
       .json({
-        message: `Event name: ${deleteEventById.title} is deleted successfully`,
+        message: `${deleteEventById.title} is deleted successfully`,
       });
   } catch (error) {
     console.error("Error deleting event:", error);
