@@ -43,3 +43,11 @@ export async function updateEvent(eventId, eventData) {
     spotLeft: event.maxCapacity - bookingCount,
   };
 }
+
+export async function deleteEvent(eventId) {
+  const event = await Event.findByIdAndDelete(eventId);
+  if (!event) return null;
+
+  await Booking.deleteMany({ event: eventId });
+  return event;
+}

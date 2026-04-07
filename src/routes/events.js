@@ -5,6 +5,7 @@ import {
   getEventById,
   createEvent,
   updateEvent,
+  deleteEvent,
 } from "../db/events.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -87,6 +88,25 @@ eventRouter.put("/:id", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error updating event:", error);
     res.status(400).json({ message: "Error updating event" });
+  }
+});
+
+eventRouter.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteEventById = await deleteEvent(id);
+
+    if (!deleteEventById) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    res
+      .status(200)
+      .json({
+        message: `${deleteEventById.title} is deleted successfully`,
+      });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ message: "Error deleting event" });
   }
 });
 
