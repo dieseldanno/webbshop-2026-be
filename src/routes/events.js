@@ -1,6 +1,11 @@
 import { Router } from "express";
 const eventRouter = Router();
-import { getEvents, createEvent, updateEvent } from "../db/events.js";
+import {
+  getEvents,
+  getEventById,
+  createEvent,
+  updateEvent,
+} from "../db/events.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 eventRouter.get("/", async (req, res) => {
