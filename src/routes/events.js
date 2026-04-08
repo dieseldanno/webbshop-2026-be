@@ -7,6 +7,9 @@ import {
   updateEvent,
   deleteEvent,
 } from "../db/events.js";
+import Event from "../models/Event.js";
+import Booking from "../models/Booking.js";
+import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 eventRouter.get("/", async (req, res) => {
@@ -16,6 +19,45 @@ eventRouter.get("/", async (req, res) => {
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ message: "Error fetching events" });
+  }
+});
+
+eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const bookings = await Booking.find({ event: id }).sort({ createdAt: -1 });
+
+    const spotsLeft = event.maxCapacity - bookings.length;
+
+    return res.status(200).json({
+      event: {
+        id: event._id,
+        title: event.title,
+        description: event.description,
+        date: event.date,
+        location: event.location,
+        maxCapacity: event.maxCapacity,
+        price: event.price,
+        category: event.category,
+        imageUrl: event.imageUrl,
+      },
+      bookings,
+      spotsLeft,
+    });
+  } catch (error) {
+    console.error("Error fetching event bookings:", error);
+    return res.status(500).json({ message: "Error fetching event bookings" });
   }
 });
 
