@@ -14,7 +14,8 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
-    const events = await getEvents();
+    const filters = req.query;
+    const events = await getEvents(filters);
     res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
