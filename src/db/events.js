@@ -1,9 +1,20 @@
 import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
 
-export async function getEvents() {
-  const events = await Event.find().sort({ date: 1 });
+export async function getEvents(filters = {}) {
+  const query = {};
 
+  if (filters.location) {
+    query.location = filters.location;
+  }
+  if (filters.category) {
+    query.category = filters.category;
+  }
+  if (filters.date) {
+    query.date = { $gt: new Date(filters.date) };
+  }
+  const events = await Event.find(query).sort({ date: 1 });
+  
   const eventsWithSpots = await Promise.all(
     events.map(async (event) => {
       const bookingCount = await Booking.countDocuments({ event: event._id });
