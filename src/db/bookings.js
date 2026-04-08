@@ -30,11 +30,23 @@ export async function getBookingsByEvent(eventId) {
   if (!event) return null;
 
   const bookings = await Booking.find({ event: eventId });
-  const bookingCount = bookings.length;
+  const totalBooked = await getTotalBookedSpots(eventId);
 
   return {
     event: event.toObject(),
     bookings,
-    spotsLeft: event.maxCapacity - bookingCount,
+    spotsLeft: Math.max(0, event.maxCapacity - totalBooked),
   };
+}
+
+export async function getTotalBookedSpots(eventId) {
+  const result = await Booking.aggregate([
+    {
+      $match: {
+        event: mongoose.Types.ObjectId.createFromHexString(String(eventId)),
+      },
+    },
+    { $group: { _id: null, total: { $sum: { $ifNull: ["$quantity", 1] } } } },
+  ]);
+  return result[0]?.total || 0;
 }
