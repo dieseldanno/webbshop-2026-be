@@ -17,6 +17,7 @@ const eventSchema = new mongoose.Schema(
     },
     location: {
       type: String,
+      enum: ["Stockholm", "Uppsala", "Göteborg", "Malmö"],
       required: true,
     },
     maxCapacity: {
@@ -34,7 +35,14 @@ const eventSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Music", "Sport", "Theater", "Other"],
+      enum: [
+        "Music",
+        "Sport",
+        "Art & culture",
+        "Health",
+        "Dance",
+        "Social activities",
+      ],
       required: true,
     },
   },
