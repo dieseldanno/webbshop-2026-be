@@ -18,12 +18,18 @@ bookingRouter.get("/", async (req, res) => {
 });
 
 bookingRouter.post("/", async (req, res) => {
-  const { eventId, name, email } = req.body;
+  const { eventId, quantity, name, email } = req.body;
 
   if (!eventId || !name || !email) {
     return res.status(400).json({
       message: "eventId, name and email is required",
     });
+  }
+
+  if (quantity !== undefined && (isNaN(quantity) || quantity < 1)) {
+    return res
+      .status(400)
+      .json({ message: "quantity must be a number greater than 0" });
   }
 
   // fix for invalid events formats
@@ -32,7 +38,7 @@ bookingRouter.post("/", async (req, res) => {
   }
 
   try {
-    const result = await createBooking({ eventId, name, email });
+    const result = await createBooking({ eventId, quantity, name, email });
 
     if (result.error === "not_found") {
       return res.status(404).json({ message: "Event not found" });
@@ -46,7 +52,6 @@ bookingRouter.post("/", async (req, res) => {
       "event",
       "title date location",
     );
-
     return res.status(201).json(populatedBooking);
   } catch (err) {
     return res.status(500).json({ error: err.message });
