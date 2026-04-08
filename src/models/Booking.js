@@ -7,6 +7,11 @@ const bookingSchema = new mongoose.Schema(
       ref: "Event",
       required: true,
     },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
     name: {
       type: String,
       required: true,

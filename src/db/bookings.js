@@ -1,14 +1,18 @@
+import mongoose from "mongoose";
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
 
-export async function createBooking({ eventId, name, email }) {
+export async function createBooking({ eventId, quantity = 1, name, email }) {
   const event = await Event.findById(eventId);
   if (!event) return { error: "not_found" };
 
-  const bookingCount = await Booking.countDocuments({ event: eventId });
-
-  if (bookingCount >= event.maxCapacity) return { error: "full" };
-  const booking = new Booking({ event: eventId, name, email });
+  const bookedSpots = await Booking.aggregate([
+    { $match: { event: mongoose.Types.ObjectId.createFromHexString(eventId) } },
+    { $group: { _id: null, total: { $sum: "$quantity" } } },
+  ]);
+  const totalBooked = bookedSpots[0]?.total || 0;
+  if (totalBooked + quantity > event.maxCapacity) return { error: "full" };
+  const booking = new Booking({ event: eventId, quantity, name, email });
   return { booking: await booking.save() };
 }
 
