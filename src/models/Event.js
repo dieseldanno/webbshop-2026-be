@@ -34,7 +34,7 @@ const eventSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Music", "Sport", "Theater", "Other"],
+      enum: ["Music", "Sport", "Art & culture", "Health", "Dance", "Social activities"],
       required: true,
     },
   },
