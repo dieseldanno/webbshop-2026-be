@@ -11,6 +11,7 @@ import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { getTotalBookedSpots } from "../db/bookings.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
@@ -39,7 +40,10 @@ eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
 
     const bookings = await Booking.find({ event: id }).sort({ createdAt: -1 });
 
-    const spotsLeft = event.maxCapacity - bookings.length;
+    const spotsLeft = Math.max(
+      0,
+      event.maxCapacity - (await getTotalBookedSpots(id)),
+    );
 
     return res.status(200).json({
       event: {
@@ -53,8 +57,8 @@ eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
         category: event.category,
         imageUrl: event.imageUrl,
       },
-      bookings,
       spotsLeft,
+      bookings,
     });
   } catch (error) {
     console.error("Error fetching event bookings:", error);
@@ -142,11 +146,9 @@ eventRouter.delete("/:id", authMiddleware, async (req, res) => {
     if (!deleteEventById) {
       return res.status(404).json({ message: "Event not found" });
     }
-    res
-      .status(200)
-      .json({
-        message: `${deleteEventById.title} is deleted successfully`,
-      });
+    res.status(200).json({
+      message: `${deleteEventById.title} is deleted successfully`,
+    });
   } catch (error) {
     console.error("Error deleting event:", error);
     res.status(500).json({ message: "Error deleting event" });
