@@ -43,9 +43,11 @@ export async function getEventBookings(eventId) {
   const event = await Event.findById(eventId);
   if (!event) return null;
 
-  const bookings = await Booking.find({ event: eventId }).sort({
-    createdAt: -1,
-  });
+  const bookings = await Booking.find({ event: eventId })
+    .populate("event", "title date location")
+    .sort({
+      createdAt: -1,
+    });
   const totalBooked = await getTotalBookedSpots(eventId);
   return {
     bookings: bookings.map((b) => b.toObject()),
