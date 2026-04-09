@@ -49,7 +49,7 @@ export async function getEventBookings(eventId) {
   const totalBooked = await getTotalBookedSpots(eventId);
   return {
     bookings: bookings.map((b) => b.toObject()),
-    spotLeft: Math.max(0, event.maxCapacity - totalBooked),
+    spotsLeft: Math.max(0, event.maxCapacity - totalBooked),
     totalBooked: totalBooked,
   };
 }
