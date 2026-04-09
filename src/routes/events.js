@@ -5,7 +5,8 @@ import {
   getEventById,
   createEvent,
   updateEvent,
-  deleteEvent,
+  deleteEvent, 
+  getEventBookings,
 } from "../db/events.js";
 import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
@@ -32,34 +33,12 @@ eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const event = await Event.findById(id);
+    const getEventWithBookings = await getEventBookings(id);
 
-    if (!event) {
+    if (!getEventWithBookings) {
       return res.status(404).json({ message: "Event not found" });
     }
-
-    const bookings = await Booking.find({ event: id }).sort({ createdAt: -1 });
-
-    const spotsLeft = Math.max(
-      0,
-      event.maxCapacity - (await getTotalBookedSpots(id)),
-    );
-
-    return res.status(200).json({
-      event: {
-        id: event._id,
-        title: event.title,
-        description: event.description,
-        date: event.date,
-        location: event.location,
-        maxCapacity: event.maxCapacity,
-        price: event.price,
-        category: event.category,
-        imageUrl: event.imageUrl,
-      },
-      spotsLeft,
-      bookings,
-    });
+    res.status(200).json(getEventWithBookings);
   } catch (error) {
     console.error("Error fetching event bookings:", error);
     return res.status(500).json({ message: "Error fetching event bookings" });
