@@ -12,7 +12,7 @@ export const handleValidationErrors = (req, res, next) => {
 export const validateId = (req, res, next) => {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id)) {
-    return res.status(400).json({ message: "Event not found" });
+    return res.status(400).json({ message: "Invalid ID format" });
   }
   next();
 };
@@ -22,6 +22,7 @@ export const validateEventBody = [
   body("description").isString().trim().withMessage("Description is required"),
   body("date")
     .isISO8601()
+    // Säkerställer att man inte kan skapa event bakåt i tiden
     .custom((value) => new Date(value) > new Date())
     .withMessage("Date must be a valid ISO 8601 date"),
   body("location")
@@ -33,6 +34,7 @@ export const validateEventBody = [
     .isIn(["Stockholm", "Uppsala", "Göteborg", "Malmö"])
     .withMessage("Invalid location selected"),
   body("maxCapacity")
+    // Strikt kontroll t.ex. 500 != "500"
     .custom((value) => typeof value === "number")
     .isInt({ min: 1 })
     .withMessage("Max capacity must be an integer greater than 0"),
