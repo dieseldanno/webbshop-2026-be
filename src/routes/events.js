@@ -16,6 +16,7 @@ import { getTotalBookedSpots } from "../db/bookings.js";
 import {
   handleValidationErrors,
   validateEventBody,
+  validateEventUpdate
 } from "../middleware/eventValidation.js";
 
 eventRouter.get("/", async (req, res) => {
@@ -76,18 +77,14 @@ eventRouter.post("/", authMiddleware, validateEventBody, async (req, res) => {
   }
 });
 
-eventRouter.put("/:id", authMiddleware, async (req, res) => {
+eventRouter.put("/:id", authMiddleware, validateEventUpdate, async (req, res) => {
   try {
     const { id } = req.params;
     const updateEventById = await updateEvent(id, req.body);
-
-    if (!updateEventById) {
-      return res.status(404).json({ message: "Event not found" });
-    }
     res.status(200).json(updateEventById);
   } catch (error) {
     console.error("Error updating event:", error);
-    res.status(400).json({ message: "Error updating event" });
+    res.status(500).json({ message: "Error updating event" });
   }
 });
 
