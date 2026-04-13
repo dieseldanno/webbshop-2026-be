@@ -1,5 +1,5 @@
-//TODO: Här ska jag lägga valideringar för events
 import { body, validationResult } from "express-validator";
+import mongoose from "mongoose";
 
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -43,3 +43,37 @@ export const validateEventBody = [
   body("imageUrl").isURL().withMessage("Image must be a valid URL"),
   handleValidationErrors,
 ];
+
+export const validateEventUpdate = [
+    body("title").optional().isString().withMessage("Title must be a string"),
+    body("description").optional().isString().withMessage("Description must be a string"),
+    body("date").optional().isISO8601().withMessage("Date must be a valid ISO 8601 date"),
+    body("location")
+      .optional()
+      .isString()
+      .notEmpty()
+      .withMessage("Location cannot be empty")
+      .isIn(["Stockholm", "Uppsala", "Göteborg", "Malmö"])
+      .withMessage("Invalid location selected"),
+    body("maxCapacity")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Max capacity must be an integer greater than 0"),
+    body("price").optional().isNumeric().withMessage("Price must be a number"),
+    body("category")
+      .optional()
+      .isString()
+      .notEmpty()
+      .withMessage("Category cannot be empty")
+      .isIn([
+        "Music",
+        "Sports",
+        "Art & culture",
+        "Health",
+        "Dance",
+        "Social activities",
+      ])
+      .withMessage("Invalid category selected"),
+    body("imageUrl").optional().isURL().withMessage("Image must be a valid URL"),
+    handleValidationErrors,
+]
