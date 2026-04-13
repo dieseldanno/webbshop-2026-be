@@ -16,7 +16,8 @@ import { getTotalBookedSpots } from "../db/bookings.js";
 import {
   handleValidationErrors,
   validateEventBody,
-  validateEventUpdate
+  validateEventUpdate,
+  validateId,
 } from "../middleware/eventValidation.js";
 
 eventRouter.get("/", async (req, res) => {
@@ -50,18 +51,14 @@ eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
   }
 });
 
-eventRouter.get("/:id", async (req, res) => {
+eventRouter.get("/:id", validateId, async (req, res) => {
   try {
-    const { id } = req.params;
-    const event = await getEventById(id);
+    const event = await getEventById(req.params.id);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
     res.status(200).json(event);
   } catch (error) {
-    if (error.name === "CastError") {
-      return res.status(400).json({ message: "Ogiltigt ID-format" });
-    }
     console.error("Error fetching event:", error);
     res.status(500).json({ message: "Error fetching event" });
   }
@@ -77,16 +74,24 @@ eventRouter.post("/", authMiddleware, validateEventBody, async (req, res) => {
   }
 });
 
-eventRouter.put("/:id", authMiddleware, validateEventUpdate, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateEventById = await updateEvent(id, req.body);
-    res.status(200).json(updateEventById);
-  } catch (error) {
-    console.error("Error updating event:", error);
-    res.status(500).json({ message: "Error updating event" });
-  }
-});
+eventRouter.put(
+  "/:id",
+  authMiddleware,
+  validateId,
+  validateEventUpdate,
+  async (req, res) => {
+    try {
+      const updateEventById = await updateEvent(req.params.id, req.body);
+      if (!updateEventById) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      res.status(200).json(updateEventById);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Error updating event" });
+    }
+  },
+);
 
 eventRouter.delete("/:id", authMiddleware, async (req, res) => {
   try {
