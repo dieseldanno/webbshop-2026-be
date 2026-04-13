@@ -5,7 +5,7 @@ import {
   getEventById,
   createEvent,
   updateEvent,
-  deleteEvent, 
+  deleteEvent,
   getEventBookings,
 } from "../db/events.js";
 import Event from "../models/Event.js";
@@ -13,6 +13,10 @@ import Booking from "../models/Booking.js";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { getTotalBookedSpots } from "../db/bookings.js";
+import {
+  handleValidationErrors,
+  validateEventBody,
+} from "../middleware/eventValidation.js";
 
 eventRouter.get("/", async (req, res) => {
   try {
@@ -62,43 +66,13 @@ eventRouter.get("/:id", async (req, res) => {
   }
 });
 
-eventRouter.post("/", authMiddleware, async (req, res) => {
+eventRouter.post("/", authMiddleware, validateEventBody, async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      date,
-      location,
-      maxCapacity,
-      price,
-      category,
-      imageUrl,
-    } = req.body;
-    if (
-      !title ||
-      !description ||
-      !date ||
-      !location ||
-      !maxCapacity ||
-      !price ||
-      !category
-    ) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-    const newEvent = await createEvent({
-      title,
-      description,
-      date,
-      location,
-      maxCapacity,
-      price,
-      category,
-      imageUrl,
-    });
+    const newEvent = await createEvent(req.body);
     res.status(201).json(newEvent);
   } catch (error) {
     console.error("Error creating event:", error);
-    res.status(400).json({ message: "Error creating event" });
+    res.status(500).json({ message: "Error creating event" });
   }
 });
 
