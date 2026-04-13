@@ -9,6 +9,14 @@ export const handleValidationErrors = (req, res, next) => {
   next();
 };
 
+export const validateId = (req, res, next) => {
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Event not found" });
+    }
+    next();
+}
+
 export const validateEventBody = [
   body("title").isString().withMessage("Title is required"),
   body("description").isString().withMessage("Description is required"),
