@@ -1,5 +1,5 @@
 import { Router } from "express";
-const eventRouter = Router();
+import { authMiddleware } from "../middleware/authMiddleware.js";
 import {
   getEvents,
   getEventById,
@@ -8,17 +8,13 @@ import {
   deleteEvent,
   getEventBookings,
 } from "../db/events.js";
-import Event from "../models/Event.js";
-import Booking from "../models/Booking.js";
-import mongoose from "mongoose";
-import { authMiddleware } from "../middleware/authMiddleware.js";
-import { getTotalBookedSpots } from "../db/bookings.js";
 import {
-  handleValidationErrors,
   validateEventBody,
   validateEventUpdate,
   validateId,
 } from "../middleware/eventValidation.js";
+
+const eventRouter = Router();
 
 eventRouter.get("/", async (req, res) => {
   try {
@@ -31,29 +27,29 @@ eventRouter.get("/", async (req, res) => {
   }
 });
 
-eventRouter.get("/:id/bookings", authMiddleware, async (req, res) => {
-  try {
-    const { id } = req.params;
+eventRouter.get(
+  "/:id/bookings",
+  authMiddleware,
+  validateId,
+  async (req, res) => {
+    try {
+      const getEventWithBookings = await getEventBookings(req.params.id);
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(404).json({ message: "Event not found" });
+      if (!getEventWithBookings) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      res.status(200).json(getEventWithBookings);
+    } catch (error) {
+      console.error("Error fetching event bookings:", error);
+      return res.status(500).json({ message: "Error fetching event bookings" });
     }
-
-    const getEventWithBookings = await getEventBookings(id);
-
-    if (!getEventWithBookings) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    res.status(200).json(getEventWithBookings);
-  } catch (error) {
-    console.error("Error fetching event bookings:", error);
-    return res.status(500).json({ message: "Error fetching event bookings" });
-  }
-});
+  },
+);
 
 eventRouter.get("/:id", validateId, async (req, res) => {
   try {
     const event = await getEventById(req.params.id);
+
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -82,6 +78,7 @@ eventRouter.put(
   async (req, res) => {
     try {
       const updateEventById = await updateEvent(req.params.id, req.body);
+
       if (!updateEventById) {
         return res.status(404).json({ message: "Event not found" });
       }
@@ -93,10 +90,9 @@ eventRouter.put(
   },
 );
 
-eventRouter.delete("/:id", authMiddleware, async (req, res) => {
+eventRouter.delete("/:id", authMiddleware, validateId, async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleteEventById = await deleteEvent(id);
+    const deleteEventById = await deleteEvent(req.params.id);
 
     if (!deleteEventById) {
       return res.status(404).json({ message: "Event not found" });
