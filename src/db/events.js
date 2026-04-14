@@ -2,6 +2,7 @@ import Event from "../models/Event.js";
 import Booking from "../models/Booking.js";
 import { getTotalBookedSpots } from "./bookings.js";
 
+// Hämtar alla event och räknar ut kvarvarande platser live för varje event
 export async function getEvents(filters = {}) {
   const query = {};
 
@@ -78,6 +79,7 @@ export async function deleteEvent(eventId) {
   const event = await Event.findByIdAndDelete(eventId);
   if (!event) return null;
 
+  // Cascade delete: Tar även bort alla bokningar kopplade till det raderade eventet
   await Booking.deleteMany({ event: eventId });
   return event;
 }

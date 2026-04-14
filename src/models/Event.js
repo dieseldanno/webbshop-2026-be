@@ -35,6 +35,7 @@ const eventSchema = new mongoose.Schema(
     },
     category: {
       type: String,
+      trim: true,
       enum: [
         "Music",
         "Sport",
