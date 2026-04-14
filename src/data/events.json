@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "65f2a1b2c9e8d7a1b2c3d4e1",
+    "title": "Summer Jazz in the Garden",
+    "description": "Experience a magical evening under the open sky where Stockholm's city pulse meets the tranquility of nature. We offer a unique concert experience featuring award-winning jazz musicians blending classic standards with fresh original compositions. Organic drinks and light snacks will be available for purchase at our cozy garden bar throughout the evening. This is the perfect activity for both hardcore jazz enthusiasts and those just looking for a soulful summer night out.",
+    "date": "2026-06-12T18:00:00.000Z",
+    "location": "Stockholm",
+    "maxCapacity": 150,
+    "price": 295,
+    "category": "Music",
+    "imageUrl": "https://images.unsplash.com/photo-1511192336575-5a79af67a629",
+    "createdAt": "2026-04-10T10:00:00.000Z",
+    "updatedAt": "2026-04-10T10:00:00.000Z"
+  },
+  {
+    "_id": "65f2a1b2c9e8d7a1b2c3d4e2",
+    "title": "Morning Yoga by the River",
+    "description": "Start your Saturday the best way possible with a flowing yoga session right by the water's edge in Uppsala. We focus on waking up the body through gentle movements and conscious breathing in a harmonious outdoor environment. After the session, we gather for a shared breakfast bag filled with local ingredients and freshly brewed coffee. The class is led by experienced instructors and is adapted so that both beginners and regular practitioners get the most out of their morning.",
+    "date": "2026-06-15T07:30:00.000Z",
+    "location": "Uppsala",
+    "maxCapacity": 30,
+    "price": 150,
+    "category": "Health",
+    "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b",
+    "createdAt": "2026-04-10T10:05:00.000Z",
+    "updatedAt": "2026-04-10T10:05:00.000Z"
+  }
+]
