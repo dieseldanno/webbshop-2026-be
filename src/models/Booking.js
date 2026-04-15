@@ -2,16 +2,6 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    event: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Event",
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      default: 1,
-      min: 1,
-    },
     name: {
       type: String,
       required: true,
@@ -28,6 +18,16 @@ const bookingSchema = new mongoose.Schema(
         },
         message: (props) => `${props.value} is not a valid email address!`,
       },
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+    event: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "Event",
+      required: true,
     },
   },
   {
