@@ -2,18 +2,39 @@ import mongoose from "mongoose";
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
 
+export async function getBookings() {
+  const bookings = await Booking.find().populate("event", "title");
+  return bookings.map((b) => ({
+    _id: b._id,
+    name: b.name,
+    email: b.email,
+    quantity: b.quantity,
+    event: b.event,
+    createdAt: b.createdAt,
+  }));
+}
+
 export async function createBooking({ eventId, quantity = 1, name, email }) {
   const event = await Event.findById(eventId);
   if (!event) return { error: "not_found" };
 
-  const bookedSpots = await Booking.aggregate([
-    { $match: { event: mongoose.Types.ObjectId.createFromHexString(eventId) } },
-    { $group: { _id: null, total: { $sum: "$quantity" } } },
-  ]);
-  const totalBooked = bookedSpots[0]?.total || 0;
+  const totalBooked = await getTotalBookedSpots(eventId);
   if (totalBooked + quantity > event.maxCapacity) return { error: "full" };
+
   const booking = new Booking({ event: eventId, quantity, name, email });
-  return { booking: await booking.save() };
+  const saved = await booking.save();
+  await saved.populate("event", "title date location");
+
+  return {
+    booking: {
+      _id: saved._id,
+      name: saved.name,
+      email: saved.email,
+      quantity: saved.quantity,
+      event: saved.event,
+      createdAt: saved.createdAt,
+    },
+  };
 }
 
 export async function deleteBooking(id) {
@@ -22,7 +43,14 @@ export async function deleteBooking(id) {
     "title",
   );
   if (!deleted) return null;
-  return deleted;
+  return {
+    _id: deleted._id,
+    name: deleted.name,
+    email: deleted.email,
+    quantity: deleted.quantity,
+    event: deleted.event,
+    createdAt: deleted.createdAt,
+  };
 }
 
 export async function getBookingsByEvent(eventId) {
