@@ -9,3 +9,11 @@ export async function createUser(userData) {
 export async function findUserByEmail(email) {
   return await User.findOne({ email });
 }
+
+export async function findUserByEmailWithPassword(email) {
+  return await User.findOne({ email }).select("+passwordHash");
+}
+
+export async function findUserById(id) {
+  return await User.findById(id).select("-passwordHash");
+}
